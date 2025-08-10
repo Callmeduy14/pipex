@@ -1,18 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strdup.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 14:20:45 by yyudi             #+#    #+#             */
+/*   Updated: 2025/07/08 11:45:41 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-// Membuat duplikasi string s1 ke memori baru (menggunakan malloc).
-char *ft_strdup(const char *s1)
+char	*ft_strdup(const char *s1)
 {
-	size_t len = 0;
-	char *dup;
-	while (s1[len])
-		len++;
-	// Alokasi memori untuk string baru
-	dup = (char *)malloc(len + 1);
+	char	*dup;
+	size_t	len;
+
+	len = ft_strlen(s1) + 1;
+	dup = malloc(len);
 	if (!dup)
-		return NULL;
-	// Salin karakter satu per satu
-	for (size_t i = 0; i <= len; i++)
-		dup[i] = s1[i];
-	return dup;
-} 
+		return (NULL);
+	ft_memcpy(dup, s1, len);
+	return (dup);
+}

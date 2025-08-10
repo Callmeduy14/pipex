@@ -1,35 +1,31 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strjoin.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 22:24:32 by yyudi             #+#    #+#             */
+/*   Updated: 2025/07/08 11:46:31 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-// Menggabungkan dua string s1 dan s2 ke dalam memori baru.
-char *ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(const char *s1, const char *s2)
 {
-	size_t len1 = 0;
-	size_t len2 = 0;
-	size_t i = 0;
-	size_t j = 0;
-	char *res;
+	size_t	len1;
+	size_t	len2;
+	char	*new_str;
+
 	if (!s1 || !s2)
-		return NULL;
-	while (s1[len1])
-		len1++;
-	while (s2[len2])
-		len2++;
-	// Alokasi memori untuk hasil gabungan
-	res = (char *)malloc(len1 + len2 + 1);
-	if (!res)
-		return NULL;
-	// Salin s1 ke hasil
-	while (i < len1)
-	{
-		res[i] = s1[i];
-		i++;
-	}
-	// Salin s2 ke hasil
-	while (j < len2)
-	{
-		res[i + j] = s2[j];
-		j++;
-	}
-	res[i + j] = '\0';
-	return res;
-} 
+		return (NULL);
+	len1 = ft_strlen(s1);
+	len2 = ft_strlen(s2);
+	new_str = malloc(len1 + len2 + 1);
+	if (!new_str)
+		return (NULL);
+	ft_memcpy(new_str, s1, len1);
+	ft_memcpy(new_str + len1, s2, len2 + 1);
+	return (new_str);
+}

@@ -1,9 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_toupper.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 14:14:42 by yyudi             #+#    #+#             */
+/*   Updated: 2025/07/08 11:48:57 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-// Mengubah huruf kecil menjadi huruf besar jika c adalah huruf kecil.
-int ft_toupper(int c)
+int	ft_toupper(int c)
 {
 	if (c >= 'a' && c <= 'z')
-		return c - 32;
-	return c;
-} 
+		return (c - 32);
+	return (c);
+}

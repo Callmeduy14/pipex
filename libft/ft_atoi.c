@@ -1,27 +1,48 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 14:25:57 by yyudi             #+#    #+#             */
+/*   Updated: 2025/07/14 10:36:19 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-// Mengubah string menjadi integer (mirip atoi pada C).
-// Mengabaikan whitespace, menangani tanda + dan -.
-int ft_atoi(const char *str)
+int	ft_isspace(char c)
 {
-	int sign = 1;
-	int result = 0;
+	if (c == ' ' || (c >= '\t' && c <= '\r'))
+		return (1);
+	else
+		return (0);
+}
 
-	// Lewati whitespace
-	while ((*str >= 9 && *str <= 13) || *str == ' ')
-		str++;
-	// Cek tanda + atau -
-	if (*str == '-' || *str == '+')
+int	ft_atoi(const char *str)
+{
+	long	nbr;
+	long	sign;
+	size_t	i;
+
+	nbr = 0;
+	sign = 1;
+	i = 0;
+	while ((str[i] != '\0') && ft_isspace(str[i]) == 1)
+		i++;
+	if (str[i] == '-')
+		sign = -1;
+	if ((str[i] == '-') || (str[i] == '+'))
+		i++;
+	while ((str[i] != '\0') && ('0' <= str[i]) && (str[i] <= '9'))
 	{
-		if (*str == '-')
-			sign = -1;
-		str++;
+		nbr = (nbr * 10) + (str[i] - '0');
+		if (nbr > 2147483647 && sign == 1)
+			return (-1);
+		if (nbr > 2147483648 && sign == -1)
+			return (0);
+		i++;
 	}
-	// Proses digit
-	while (*str >= '0' && *str <= '9')
-	{
-		result = result * 10 + (*str - '0');
-		str++;
-	}
-	return result * sign;
-} 
+	return (sign * nbr);
+}

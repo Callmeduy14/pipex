@@ -1,10 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_putendl_fd.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 22:33:57 by yyudi             #+#    #+#             */
+/*   Updated: 2025/07/08 11:51:37 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-// Menulis string s diikuti newline ke file descriptor fd.
-void ft_putendl_fd(char *s, int fd)
+void	ft_putendl_fd(const char *s, int fd)
 {
-	if (!s)
-		return;
-	write(fd, s, ft_strlen(s));
-	write(fd, "\n", 1);
-} 
+	ft_putstr_fd(s, fd);
+	ft_putchar_fd('\n', fd);
+}

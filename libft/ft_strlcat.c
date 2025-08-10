@@ -1,29 +1,34 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strlcat.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 22:08:16 by yyudi             #+#    #+#             */
+/*   Updated: 2025/07/15 14:12:38 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-// Menambahkan string src ke akhir dst, maksimal dstsize-1 karakter, lalu null-terminate.
-// Mengembalikan panjang awal dst + panjang src.
-size_t ft_strlcat(char *dst, const char *src, size_t dstsize)
+size_t	ft_strlcat(char *dst, const char *src, size_t size)
 {
-	size_t dlen = 0;
-	size_t slen = 0;
-	size_t i = 0;
+	size_t	dst_len;
+	size_t	src_len;
 
-	// Hitung panjang dst dan src
-	while (dst[dlen] && dlen < dstsize)
-		dlen++;
-	while (src[slen])
-		slen++;
-	// Jika dst penuh, kembalikan dstsize + panjang src
-	if (dlen == dstsize)
-		return dstsize + slen;
-	// Tambahkan src ke dst
-	while (src[i] && dlen + i < dstsize - 1)
+	if (dst == NULL && size == 0)
+		return (0);
+	dst_len = ft_strlen(dst);
+	src_len = ft_strlen(src);
+	if (dst_len >= size)
+		return (size + src_len);
+	if (src_len < size - dst_len)
+		ft_memcpy(dst + dst_len, src, src_len + 1);
+	else
 	{
-		dst[dlen + i] = src[i];
-		i++;
+		ft_memcpy(dst + dst_len, src, size - dst_len - 1);
+		dst[size - 1] = '\0';
 	}
-	// Null-terminate jika masih ada ruang
-	if (dlen + i < dstsize)
-		dst[dlen + i] = '\0';
-	return dlen + slen;
-} 
+	return (dst_len + src_len);
+}

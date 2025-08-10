@@ -1,47 +1,47 @@
 #include "pipex.h"
 
-char    **get_paths(char **envp)
+void	free_array(char **a)
 {
-    char    **paths;
-    int     i;
+	int	i;
 
-    i = 0;
-    while (envp[i] && ft_strncmp(envp[i], "PATH=", 5))
-        i++;
-    if (!envp[i])
-        return (NULL);
-    paths = ft_split(envp[i] + 5, ':');
-    return (paths);
+	if (!a)
+		return ;
+	i = 0;
+	while (a[i])
+	{
+		free(a[i]);
+		i++;
+	}
+	free(a);
 }
 
-char    *get_cmd_path(char **paths, char *cmd)
+int	str_equal(const char *a, const char *b)
 {
-    char    *tmp;
-    char    *full_path;
-    int     i;
+	size_t	la;
+	size_t	lb;
 
-    if (access(cmd, X_OK) == 0)
-        return (ft_strdup(cmd));
-    i = 0;
-    while (paths && paths[i])
-    {
-        tmp = ft_strjoin(paths[i], "/");
-        full_path = ft_strjoin(tmp, cmd);
-        free(tmp);
-        if (access(full_path, X_OK) == 0)
-            return (full_path);
-        free(full_path);
-        i++;
-    }
-    return (NULL);
+	if (!a || !b)
+		return (0);
+	la = ft_strlen(a);
+	lb = ft_strlen(b);
+	if (la != lb)
+		return (0);
+	return (ft_strncmp(a, b, la) == 0);
 }
 
-void    free_array(char **arr)
+void	close_fd(int *fd)
 {
-    int i;
+	if (*fd >= 0)
+	{
+		close(*fd);
+		*fd = -1;
+	}
+}
 
-    i = 0;
-    while (arr[i])
-        free(arr[i++]);
-    free(arr);
+void	close_pipe(int pfd[2])
+{
+	if (pfd[0] >= 0)
+		close(pfd[0]);
+	if (pfd[1] >= 0)
+		close(pfd[1]);
 }

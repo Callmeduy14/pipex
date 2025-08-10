@@ -1,20 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strmapi.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 22:36:08 by yyudi             #+#    #+#             */
+/*   Updated: 2025/07/08 11:47:26 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-// Membuat string baru hasil transformasi setiap karakter s dengan fungsi f.
-char *ft_strmapi(char const *s, char (*f)(unsigned int, char))
+char	*ft_strmapi(const char *s, char (*f)(unsigned int, char))
 {
-	unsigned int i = 0;
-	char *res;
+	char			*str;
+	unsigned int	i;
+
 	if (!s || !f)
-		return NULL;
+		return (NULL);
+	str = malloc(ft_strlen(s) + 1);
+	if (!str)
+		return (NULL);
+	i = 0;
 	while (s[i])
+	{
+		str[i] = f(i, s[i]);
 		i++;
-	// Alokasi memori untuk string hasil
-	res = (char *)malloc(i + 1);
-	if (!res)
-		return NULL;
-	for (unsigned int j = 0; j < i; j++)
-		res[j] = f(j, s[j]);
-	res[i] = '\0';
-	return res;
-} 
+	}
+	str[i] = '\0';
+	return (str);
+}

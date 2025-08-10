@@ -1,63 +1,100 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_split.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 21:49:28 by yyudi             #+#    #+#             */
+/*   Updated: 2025/07/08 20:20:00 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-// Fungsi pembantu: Menghitung jumlah kata yang dipisahkan oleh delimiter c
-static size_t count_words(const char *s, char c)
+static int	count_word(char const *s, char c)
 {
-	size_t count = 0;
-	int in_word = 0;
+	int	count;
+	int	word;
+
+	count = 0;
+	word = 0;
 	while (*s)
 	{
-		if (*s != c && in_word == 0)
+		if (*s != c && !word)
 		{
-			in_word = 1;
+			word = 1;
 			count++;
 		}
-		else if (*s == c)
-			in_word = 0;
+		if (*s == c)
+			word = 0;
 		s++;
 	}
-	return count;
+	return (count);
 }
 
-// Fungsi pembantu: Membebaskan seluruh array string jika terjadi error
-static void free_all(char **arr, size_t n)
+static char	*extract_word(const char **s, char c)
 {
-	size_t i = 0;
-	while (i < n)
-	{
-		free(arr[i]);
-		i++;
-	}
-	free(arr);
+	const char	*start;
+	size_t		len;
+	char		*word;
+
+	start = *s;
+	while (**s && **s != c)
+		(*s)++;
+	len = *s - start;
+	word = malloc(len + 1);
+	if (!word)
+		return (NULL);
+	ft_memcpy(word, start, len);
+	word[len] = '\0';
+	return (word);
 }
 
-// Memecah string s menjadi array string berdasarkan delimiter c.
-// Setiap kata di-allocasi dengan malloc, hasil diakhiri NULL.
-char **ft_split(char const *s, char c)
+static void	cleanup(char **result, int count)
 {
-	size_t words, i = 0, j = 0, start = 0;
-	char **arr;
-	if (!s)
-		return NULL;
-	words = count_words(s, c);
-	arr = (char **)malloc((words + 1) * sizeof(char *));
-	if (!arr)
-		return NULL;
-	while (s[i] && j < words)
+	while (count-- > 0)
+		free(result[count]);
+	free(result);
+}
+
+static int	fill_result(char **result, const char *s, char c, int word_count)
+{
+	int	i;
+
+	i = 0;
+	while (*s && i < word_count)
 	{
-		while (s[i] == c)
-			i++;
-		start = i;
-		while (s[i] && s[i] != c)
-			i++;
-		arr[j] = ft_substr(s, start, i - start);
-		if (!arr[j])
+		while (*s == c)
+			s++;
+		if (*s)
 		{
-			free_all(arr, j);
-			return NULL;
+			result[i] = extract_word(&s, c);
+			if (!result[i])
+				return (0);
+			i++;
 		}
-		j++;
 	}
-	arr[j] = NULL;
-	return arr;
-} 
+	result[i] = NULL;
+	return (1);
+}
+
+char	**ft_split(char const *s, char c)
+{
+	char	**result;
+	int		word_count;
+
+	if (!s)
+		return (NULL);
+	word_count = count_word(s, c);
+	result = (char **)malloc((word_count + 1) * sizeof (char *));
+	if (!result)
+		return (NULL);
+	ft_bzero(result, (word_count + 1) * sizeof(char *));
+	if (!fill_result(result, s, c, word_count))
+	{
+		cleanup(result, word_count);
+		return (NULL);
+	}
+	return (result);
+}

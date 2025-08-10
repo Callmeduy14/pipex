@@ -1,32 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_substr.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 21:17:19 by yyudi             #+#    #+#             */
+/*   Updated: 2025/07/14 20:58:17 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-// Mengambil substring dari string s mulai dari indeks start sepanjang len karakter.
-// Mengalokasikan memori baru untuk hasil substring.
-char *ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_substr(const char *s, unsigned int start, size_t len)
 {
-	size_t slen = 0;
-	char *sub;
-	size_t i = 0;
+	char	*sub;
+	size_t	s_len;
+
 	if (!s)
-		return NULL;
-	while (s[slen])
-		slen++;
-	// Jika start di luar panjang string, kembalikan string kosong
-	if (start >= slen)
-		return (char *)ft_calloc(1, 1);
-	// Jika len melebihi sisa karakter, sesuaikan
-	if (len > slen - start)
-		len = slen - start;
-	// Alokasi memori untuk substring
-	sub = (char *)malloc(len + 1);
+		return (NULL);
+	s_len = ft_strlen(s);
+	if (start >= s_len)
+		return (ft_strdup(""));
+	if (len > s_len - start)
+		len = s_len - start;
+	sub = malloc(len + 1);
 	if (!sub)
-		return NULL;
-	// Salin karakter
-	while (i < len)
-	{
-		sub[i] = s[start + i];
-		i++;
-	}
-	sub[i] = '\0';
-	return sub;
-} 
+		return (NULL);
+	ft_memcpy(sub, s + start, len);
+	sub[len] = '\0';
+	return (sub);
+}

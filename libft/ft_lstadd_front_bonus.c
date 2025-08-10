@@ -1,31 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlcpy.c                                       :+:      :+:    :+:   */
+/*   ft_lstadd_front.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/03 14:17:15 by yyudi             #+#    #+#             */
-/*   Updated: 2025/07/08 11:47:00 by yyudi            ###   ########.fr       */
+/*   Created: 2025/07/03 22:34:53 by yyudi             #+#    #+#             */
+/*   Updated: 2025/07/08 11:25:00 by yyudi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-size_t	ft_strlcpy(char *dst, const char *src, size_t size)
+void	ft_lstadd_front(t_list **lst, t_list *new)
 {
-	size_t	len;
-	size_t	n;
-
-	len = ft_strlen(src);
-	if (size == 0)
-		return (len);
-	n = 0;
-	while (src[n] != '\0' && n < size - 1)
-	{
-		dst[n] = src[n];
-		n++;
-	}
-	dst[n] = '\0';
-	return (len);
+	if (!lst || !new)
+		return ;
+	new->next = *lst;
+	*lst = new;
 }

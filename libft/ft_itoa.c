@@ -1,43 +1,54 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_itoa.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 21:19:20 by yyudi             #+#    #+#             */
+/*   Updated: 2025/07/20 15:59:21 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-// Fungsi pembantu: Menghitung jumlah digit yang dibutuhkan untuk representasi string
-static size_t ft_numlen(int n)
+static int	count_digits(int n)
 {
-	size_t len = 0;
-	long num = n;
-	if (num <= 0)
+	int	count ;
+
+	count = 0;
+	if (n <= 0)
+		count = 1;
+	while (n != 0)
 	{
-		len++;
-		num = -num;
+		n /= 10;
+		count++;
 	}
-	while (num > 0)
-	{
-		len++;
-		num /= 10;
-	}
-	return len;
+	return (count);
 }
 
-// Mengubah integer n menjadi string (menggunakan malloc untuk hasilnya)
-char *ft_itoa(int n)
+char	*ft_itoa(int n)
 {
-	long num = n;
-	size_t len = ft_numlen(n);
-	char *str = (char *)malloc(len + 1);
+	char	*str;
+	int		len;
+	int		sign;
+
+	sign = 1;
+	if (n < 0)
+	{
+		sign = -1;
+	}
+	len = count_digits(n);
+	str = malloc(len + 1);
 	if (!str)
-		return NULL;
+		return (NULL);
 	str[len] = '\0';
-	if (num < 0)
+	while (len-- > 0)
 	{
+		str[len] = '0' + sign * (n % 10);
+		n /= 10;
+	}
+	if (sign == -1)
 		str[0] = '-';
-		num = -num;
-	}
-	if (num == 0)
-		str[0] = '0';
-	while (num > 0)
-	{
-		str[--len] = (num % 10) + '0';
-		num /= 10;
-	}
-	return str;
-} 
+	return (str);
+}

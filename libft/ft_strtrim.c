@@ -1,38 +1,34 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strtrim.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/08 11:06:13 by yyudi             #+#    #+#             */
+/*   Updated: 2025/07/08 11:52:20 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-// Fungsi pembantu: Mengecek apakah karakter c ada di dalam string set
-static int is_in_set(char c, const char *set)
+char	*ft_strtrim(char const *s1, char const *set)
 {
-	while (*set)
-	{
-		if (c == *set)
-			return 1;
-		set++;
-	}
-	return 0;
-}
+	size_t	start;
+	size_t	end;
+	char	*str;
 
-// Menghapus karakter di awal dan akhir string s1 yang ada di set, hasil di memori baru.
-char *ft_strtrim(char const *s1, char const *set)
-{
-	size_t start = 0;
-	size_t end;
-	char *res;
 	if (!s1 || !set)
-		return NULL;
-	end = 0;
-	while (s1[end])
-		end++;
-	if (end == 0)
-		return (char *)ft_calloc(1, 1);
-	end--;
-	// Cari indeks awal yang bukan bagian dari set
-	while (s1[start] && is_in_set(s1[start], set))
+		return (NULL);
+	start = 0;
+	end = ft_strlen(s1);
+	while (s1[start] && ft_strchr(set, s1[start]))
 		start++;
-	// Cari indeks akhir yang bukan bagian dari set
-	while (end > start && is_in_set(s1[end], set))
+	while (end > start && ft_strchr(set, s1[end - 1]))
 		end--;
-	// Ambil substring hasil trim
-	res = ft_substr(s1, start, end - start + 1);
-	return res;
-} 
+	str = (char *)malloc(sizeof(char) * (end - start + 1));
+	if (!str)
+		return (NULL);
+	ft_strlcpy(str, s1 + start, end - start + 1);
+	return (str);
+}
