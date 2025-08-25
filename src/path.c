@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   path.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/12 19:31:59 by yyudi             #+#    #+#             */
+/*   Updated: 2025/08/12 20:55:40 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 int	starts_with(const char *s, const char *pfx)
@@ -21,6 +33,8 @@ int	is_absolute_or_rel(const char *s)
 	if (!s || !*s)
 		return (0);
 	if (s[0] == '/' || starts_with(s, "./") || starts_with(s, "../"))
+		return (1);
+	if (ft_strchr(s, '/'))
 		return (1);
 	return (0);
 }

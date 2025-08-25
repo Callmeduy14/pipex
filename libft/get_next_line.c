@@ -6,7 +6,7 @@
 /*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 19:54:45 by yyudi             #+#    #+#             */
-/*   Updated: 2025/08/10 09:16:52 by yyudi            ###   ########.fr       */
+/*   Updated: 2025/08/25 12:26:14 by yyudi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static char	*ft_read(int fd, char *buffer, char *line, int *b_read)
 		if (*b_read > 0)
 		{
 			buffer[*b_read] = '\0';
-			temp = ft_strjoin(line, buffer);
+			temp = ft_strjoin_gnl(line, buffer);
 			if (!temp)
 				return (free(line), NULL);
 			free(line);

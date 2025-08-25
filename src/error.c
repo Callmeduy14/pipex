@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   error.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/12 19:26:47 by yyudi             #+#    #+#             */
+/*   Updated: 2025/08/12 19:26:48 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 void	err_file(const char *name)
@@ -26,9 +38,10 @@ void	err_msg(const char *msg, int code)
 
 int	exit_status_from_errno(const char *path)
 {
-	if (!path)
-		return (127);
-	if (access(path, F_OK) == 0 && access(path, X_OK) != 0)
+	(void)path;
+	if (errno == EACCES || errno == EISDIR)
 		return (126);
-	return (127);
+	if (errno == ENOENT || errno == ENOTDIR)
+		return (127);
+	return (126);
 }

@@ -1,96 +1,65 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   split_quotes.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/12 19:32:20 by yyudi             #+#    #+#             */
+/*   Updated: 2025/08/14 20:34:56 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
-
-static int	sk_isspace(char c){return (c == ' ' || c == '\t');}
-
-static const char	*skip_spaces(const char *p)
-{
-	while (*p && sk_isspace(*p))
-		p++;
-	return (p);
-}
-
-static int	in_quote_next(int st, char c)
-{
-	if (c == '\'' && st != 2)
-		return (st == 1 ? 0 : 1);
-	if (c == '"' && st != 1)
-		return (st == 2 ? 0 : 2);
-	return (st);
-}
 
 static int	count_tokens_q(const char *s)
 {
-	int			cnt;
-	int			st;
 	const char	*p;
+	int			cnt;
 
-	cnt = 0;
-	st = 0;
 	p = s;
+	cnt = 0;
 	while (*p)
 	{
-		p = skip_spaces(p);
+		p = sq_skip_spaces(p);
 		if (!*p)
 			break ;
 		cnt++;
-		while (*p)
-		{
-			st = in_quote_next(st, *p);
-			if (st == 0 && sk_isspace(*p))
-				break ;
-			p++;
-		}
+		sq_skip_one_token(&p);
 	}
 	return (cnt);
 }
 
-static int	token_span(const char *s)
+static int	sq_fill_tokens(char **tab, const char *s, int cnt)
 {
-	int	st;
-	int	len;
+	const char	*p;
+	int			i;
+	int			len;
 
-	st = 0;
-	len = 0;
-	while (s[len])
-	{
-		st = in_quote_next(st, s[len]);
-		if (st == 0 && sk_isspace(s[len]))
-			break ;
-		len++;
-	}
-	return (len);
-}
-
-static int	unquote_copy(char *dst, const char *src, int n)
-{
-	int	st;
-	int	i;
-	int	k;
-
-	st = 0;
 	i = 0;
-	k = 0;
-	while (i < n)
+	p = s;
+	while (*p && i < cnt)
 	{
-		if ((src[i] == '\'' && st != 2) || (src[i] == '"' && st != 1))
+		p = sq_skip_spaces(p);
+		len = sq_token_span(p);
+		tab[i] = (char *)malloc(len + 1);
+		if (!tab[i])
 		{
-			st = in_quote_next(st, src[i]);
-			i++;
-			continue ;
+			sq_free_tab(tab, i);
+			return (0);
 		}
-		dst[k++] = src[i++];
+		sq_unquote_copy(tab[i], p, len);
+		p += len;
+		i++;
 	}
-	dst[k] = '\0';
-	return (k);
+	tab[i] = NULL;
+	return (1);
 }
 
 char	**ft_split_quotes(const char *s)
 {
-	char		**tab;
-	const char	*p;
-	int			cnt;
-	int			len;
-	int			i;
+	char	**tab;
+	int		cnt;
 
 	if (!s)
 		return (NULL);
@@ -98,18 +67,7 @@ char	**ft_split_quotes(const char *s)
 	tab = (char **)malloc(sizeof(char *) * (cnt + 1));
 	if (!tab)
 		return (NULL);
-	p = s;
-	i = 0;
-	while (*p && i < cnt)
-	{
-		p = skip_spaces(p);
-		len = token_span(p);
-		tab[i] = (char *)malloc((len + 1));
-		if (!tab[i])
-			return (free_array(tab), NULL);
-		unquote_copy(tab[i++], p, len);
-		p += len;
-	}
-	tab[i] = NULL;
+	if (!sq_fill_tokens(tab, s, cnt))
+		return (NULL);
 	return (tab);
 }

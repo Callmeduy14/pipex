@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/12 19:31:36 by yyudi             #+#    #+#             */
+/*   Updated: 2025/08/12 19:31:37 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 static char	*resolve_cmd_path(char **args, char **envp)
@@ -25,7 +37,10 @@ static void	execve_or_exit(char *path, char **args, char **envp)
 {
 	if (!path)
 	{
-		err_cmd(args && args[0] ? args[0] : NULL);
+		if (args && args[0])
+			err_cmd(args[0]);
+		else
+			err_cmd(NULL);
 		exit(127);
 	}
 	execve(path, args, envp);

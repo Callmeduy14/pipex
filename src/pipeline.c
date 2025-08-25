@@ -1,27 +1,36 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipeline.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yyudi <yyudi@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/12 19:32:16 by yyudi             #+#    #+#             */
+/*   Updated: 2025/08/25 13:46:29 by yyudi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 static void	child_first(int infd, int pfd[2], const char *cmd, char **envp)
 {
+	int	nullfd;
+
 	if (infd >= 0)
 		dup2(infd, STDIN_FILENO);
 	else
-		dup2(open("/dev/null", O_RDONLY), STDIN_FILENO);
+	{
+		nullfd = open("/dev/null", O_RDONLY);
+		if (nullfd < 0)
+			_exit(1);
+		dup2(nullfd, STDIN_FILENO);
+		close(nullfd);
+	}
 	dup2(pfd[WR], STDOUT_FILENO);
-	close(infd);
-	close_pipe(pfd);
-	exec_one(cmd, envp);
-}
-
-static void	child_mid(int in, int out, const char *cmd, char **envp)
-{
-	if (in >= 0)
-		dup2(in, STDIN_FILENO);
-	if (out >= 0)
-		dup2(out, STDOUT_FILENO);
-	if (in >= 0)
-		close(in);
-	if (out >= 0)
-		close(out);
+	if (infd >= 0)
+		close(infd);
+	close(pfd[RD]);
+	close(pfd[WR]);
 	exec_one(cmd, envp);
 }
 
@@ -36,70 +45,48 @@ static void	child_last(int in, int outfd, const char *cmd, char **envp)
 	exec_one(cmd, envp);
 }
 
-static int	wait_last(pid_t *pids, int n)
+static int	wait_last_two(pid_t p1, pid_t p2)
 {
-	int		i;
-	int		status;
-	int		code;
+	int	status;
+	int	code;
 
-	i = 0;
 	code = 0;
-	while (i < n)
+	if (waitpid(p1, NULL, 0) < 0)
+		code = 1;
+	if (waitpid(p2, &status, 0) > 0)
 	{
-		if (waitpid(pids[i], &status, 0) > 0)
-		{
-			if (i == n - 1)
-			{
-				if (WIFEXITED(status))
-					code = WEXITSTATUS(status);
-				else if (WIFSIGNALED(status))
-					code = 128 + WTERMSIG(status);
-			}
-		}
-		i++;
+		if (WIFEXITED(status))
+			code = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+			code = 128 + WTERMSIG(status);
 	}
 	return (code);
 }
 
 int	run_pipeline(t_px *px, int first_fd, int cmd_start, int cmd_end)
 {
-	int		i;
 	int		pfd[2];
-	int		in;
-	pid_t	*pids;
-	int		ncmd;
-	int		code;
+	pid_t	p1;
+	pid_t	p2;
 
-	ncmd = cmd_end - cmd_start + 1;
-	pids = (pid_t *)malloc(sizeof(pid_t) * ncmd);
-	if (!pids)
+	(void)cmd_end;
+	if (pipe(pfd) < 0)
 		return (-1);
-	in = first_fd;
-	i = 0;
-	while (i < ncmd)
+	p1 = fork();
+	if (p1 == 0)
+		child_first(first_fd, pfd, px->av[cmd_start], px->envp);
+	p2 = fork();
+	if (p2 == 0)
 	{
-		if (i < ncmd - 1 && pipe(pfd) < 0)
-			return (free(pids), -1);
-		pids[i] = fork();
-		if (pids[i] == 0)
-		{
-			if (i == 0)
-				child_first(in, pfd, px->av[cmd_start + i], px->envp);
-			else if (i == ncmd - 1)
-				child_last(in, px->out_fd, px->av[cmd_start + i], px->envp);
-			else
-				child_mid(in, pfd[WR], px->av[cmd_start + i], px->envp);
-		}
-		if (i > 0)
-			close(in);
-		if (i < ncmd - 1)
-		{
-			close(pfd[WR]);
-			in = pfd[RD];
-		}
-		i++;
+		if (first_fd >= 0)
+			close(first_fd);
+		close(pfd[WR]);
+		child_last(pfd[RD], px->out_fd, px->av[cmd_start + 1], px->envp);
 	}
-	code = wait_last(pids, ncmd);
-	free(pids);
-	return (code);
+	if (first_fd >= 0)
+		close(first_fd);
+	close(pfd[RD]);
+	close(pfd[WR]);
+	close(px->out_fd);
+	return (wait_last_two(p1, p2));
 }
